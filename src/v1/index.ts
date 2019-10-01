@@ -44,7 +44,14 @@ export function encodeBallot(ballot: CompletedBallot): Uint8Array {
 }
 
 export function encodeBallotInto(
-  { election, ballotStyle, precinct, votes, ballotId }: CompletedBallot,
+  {
+    election,
+    ballotStyle,
+    precinct,
+    votes,
+    ballotId,
+    isTestBallot,
+  }: CompletedBallot,
   bits: BitWriter
 ): BitWriter {
   validateVotes({ election, ballotStyle, votes })
@@ -55,7 +62,8 @@ export function encodeBallotInto(
     .writeUint8(...Prelude)
     .writeString(ballotStyle.id)
     .writeString(precinct.id)
-  return encodeBallotVotesInto(contests, votes, bits).writeString(ballotId)
+    .writeString(ballotId)
+  return encodeBallotVotesInto(contests, votes, bits).writeBoolean(isTestBallot)
 }
 
 function encodeBallotVotesInto(
@@ -157,9 +165,10 @@ export function decodeBallotFromReader(
     )
   }
 
+  const ballotId = bits.readString()
   const contests = getContests({ ballotStyle, election })
   const votes = decodeBallotVotes(contests, bits)
-  const ballotId = bits.readString()
+  const isTestBallot = bits.readBoolean()
 
   readPaddingToEnd(bits)
 
@@ -169,6 +178,7 @@ export function decodeBallotFromReader(
     election,
     precinct,
     votes,
+    isTestBallot,
   }
 }
 

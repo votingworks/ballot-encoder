@@ -34,6 +34,7 @@ test('does not detect a v0 buffer as v1', () => {
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
 
   expect(detect(v0.encodeBallot(ballot))).toBe(false)
@@ -51,6 +52,7 @@ test('encodes & decodes with Uint8Array as the standard encoding interface', () 
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
 
   expect(decodeBallot(election, encodeBallot(ballot))).toEqual(ballot)
@@ -68,6 +70,7 @@ it('encodes & decodes empty votes correctly', () => {
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
   const encodedBallot = new BitWriter()
     // prelude + version number
@@ -77,10 +80,44 @@ it('encodes & decodes empty votes correctly', () => {
     .writeString('12')
     // precinct id
     .writeString('23')
-    // vote roll call only, no vote data
-    .writeBoolean(...contests.map(() => false))
     // ballot Id
     .writeString('abcde')
+    // vote roll call only, no vote data
+    .writeBoolean(...contests.map(() => false))
+    .toUint8Array()
+
+  expect(encodeBallot(ballot)).toEqualBits(encodedBallot)
+  expect(decodeBallot(election, encodedBallot)).toEqual(ballot)
+})
+
+it('encodes & decodes whether it is a test ballot', () => {
+  const ballotStyle = election.ballotStyles[0]
+  const precinct = election.precincts[0]
+  const contests = getContests({ ballotStyle, election })
+  const votes = vote(contests, {})
+  const ballotId = 'abcde'
+  const ballot = {
+    election,
+    ballotId,
+    ballotStyle,
+    precinct,
+    votes,
+    isTestBallot: true,
+  }
+  const encodedBallot = new BitWriter()
+    // prelude + version number
+    .writeString('VX', { includeLength: false })
+    .writeUint8(1)
+    // ballot style id
+    .writeString('12')
+    // precinct id
+    .writeString('23')
+    // ballot Id
+    .writeString('abcde')
+    // vote roll call only, no vote data
+    .writeBoolean(...contests.map(() => false))
+    // test ballot?
+    .writeBoolean(true)
     .toUint8Array()
 
   expect(encodeBallot(ballot)).toEqualBits(encodedBallot)
@@ -108,6 +145,7 @@ it('encodes & decodes yesno votes correctly', () => {
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
   const encodedBallot = new BitWriter()
     // prelude + version number
@@ -117,6 +155,8 @@ it('encodes & decodes yesno votes correctly', () => {
     .writeString('12')
     // precinct id
     .writeString('23')
+    // ballot Id
+    .writeString('abcde')
     // vote roll call
     .writeBoolean(...contests.map(contest => contest.id in votes))
     // vote data
@@ -128,8 +168,6 @@ it('encodes & decodes yesno votes correctly', () => {
     .writeBoolean(true)
     .writeBoolean(false)
     .writeBoolean(true)
-    // ballot Id
-    .writeString('abcde')
     .toUint8Array()
 
   expect(encodeBallot(ballot)).toEqualBits(encodedBallot)
@@ -161,6 +199,7 @@ it('encodes & decodes candidate choice votes correctly', () => {
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
   const encodedBallot = new BitWriter()
     // prelude + version number
@@ -170,6 +209,8 @@ it('encodes & decodes candidate choice votes correctly', () => {
     .writeString('12')
     // precinct id
     .writeString('23')
+    // ballot Id
+    .writeString('abcde')
     // vote roll call
     .writeBoolean(...contests.map(contest => contest.id in votes))
     // vote data
@@ -201,8 +242,6 @@ it('encodes & decodes candidate choice votes correctly', () => {
     .writeBoolean(true, ...falses(5))
     // --- write-ins
     .writeUint(0, { max: 2 }) // 3 seats - 1 selection = 2 write-ins max
-    // ballot Id
-    .writeString('abcde')
     .toUint8Array()
 
   expect(encodeBallot(ballot)).toEqualBits(encodedBallot)
@@ -225,6 +264,7 @@ it('encodes & decodes write-in votes correctly', () => {
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
   const encodedBallot = new BitWriter()
     // prelude + version number
@@ -234,6 +274,8 @@ it('encodes & decodes write-in votes correctly', () => {
     .writeString('12')
     // precinct id
     .writeString('23')
+    // ballot Id
+    .writeString('abcde')
     // vote roll call
     .writeBoolean(...contests.map(contest => contest.id in votes))
     // vote data
@@ -245,8 +287,8 @@ it('encodes & decodes write-in votes correctly', () => {
       encoding: WriteInEncoding,
       maxLength: MAXIMUM_WRITE_IN_LENGTH,
     })
-    // ballot Id
-    .writeString('abcde')
+    // test ballot?
+    .writeBoolean(false)
     .toUint8Array()
 
   expect(encodeBallot(ballot)).toEqualBits(encodedBallot)
@@ -301,7 +343,7 @@ test('cannot decode a ballot with a precinct ID not in the election', () => {
   )
 })
 
-test('cannot decode a ballot that includes data after the ballot ID', () => {
+test('cannot decode a ballot that includes extra data at the end', () => {
   const ballotStyle = election.ballotStyles[0]
   const precinct = election.precincts[0]
   const contests = getContests({ election, ballotStyle })
@@ -313,6 +355,7 @@ test('cannot decode a ballot that includes data after the ballot ID', () => {
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
 
   const writer = new BitWriter()
@@ -326,7 +369,7 @@ test('cannot decode a ballot that includes data after the ballot ID', () => {
   )
 })
 
-test('cannot decode a ballot that includes too much padding after the ballot ID', () => {
+test('cannot decode a ballot that includes too much padding at the end', () => {
   const ballotStyle = election.ballotStyles[0]
   const precinct = election.precincts[0]
   const contests = getContests({ election, ballotStyle })
@@ -338,6 +381,7 @@ test('cannot decode a ballot that includes too much padding after the ballot ID'
     ballotStyle,
     precinct,
     votes,
+    isTestBallot: false,
   }
 
   const writer = new BitWriter()
