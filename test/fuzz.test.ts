@@ -24,17 +24,22 @@ interface Action<C extends Instance, M extends keyof C = keyof C> {
   returnValue?: ReturnType<C[M]>
 }
 
-interface PerformedAction<C extends Instance, M extends keyof C = keyof C>
+interface BoundAction<C extends Instance, M extends keyof C = keyof C>
   extends Action<C, M> {
   receiver: C
 }
 
 const random = new Random()
 
-type ActionsPairs = [Action<BitWriter>[], Action<BitReader>[]]
+type ActionsPair = [Action<BitWriter>[], Action<BitReader>[]]
 
+/**
+ * Test cases are a pair of lists for write and read actions that should match
+ * up together. The idea is to generate random values that will better exercise
+ * the range of values and order of operations possible than hardcoded tests can.
+ */
 const testCaseFactories = {
-  'vararg booleans': (): ActionsPairs => {
+  'vararg booleans': (): ActionsPair => {
     const argCount = random.integer(0, 10)
     const args = new Array<boolean>(argCount)
       .fill(false)
@@ -50,7 +55,7 @@ const testCaseFactories = {
     ]
   },
 
-  'length-prefixed utf-8 strings': (): ActionsPairs => {
+  'length-prefixed utf-8 strings': (): ActionsPair => {
     const length = random.integer(0, 50)
     const maxLength = random.integer(length, length * 2)
     const string = random.string(length)
@@ -61,7 +66,7 @@ const testCaseFactories = {
     ]
   },
 
-  'length-prefixed strings with custom encoding': (): ActionsPairs => {
+  'length-prefixed strings with custom encoding': (): ActionsPair => {
     const chars = Array.from(
       new Set(random.string(random.integer(1, 20))).values()
     ).join('')
@@ -74,7 +79,7 @@ const testCaseFactories = {
     ]
   },
 
-  'dynamic size uints': (): ActionsPairs => {
+  'dynamic size uints': (): ActionsPair => {
     const useMax = random.bool()
     const useSize = !useMax
     const max = useMax ? random.integer(0, 1 << 30) : undefined
@@ -102,7 +107,7 @@ const testCaseFactories = {
     ]
   },
 
-  'vararg uint1s': (): ActionsPairs => {
+  'vararg uint1s': (): ActionsPair => {
     const argCount = random.integer(0, 10)
     const args = new Array<0 | 1>(argCount)
       .fill(0)
@@ -123,7 +128,7 @@ const testCaseFactories = {
     ]
   },
 
-  'vararg uint8s': (): ActionsPairs => {
+  'vararg uint8s': (): ActionsPair => {
     const argCount = random.integer(0, 10)
     const args = new Array<Uint8Index>(argCount)
       .fill(0)
@@ -145,12 +150,20 @@ const testCaseFactories = {
   },
 }
 
-const testCaseNames = Object.getOwnPropertyNames(
-  testCaseFactories
-) as (keyof typeof testCaseFactories)[]
-
-function doWritesAndReads([writes, reads]: ActionsPairs): void {
-  const performedActions: PerformedAction<any>[] = []
+/**
+ * Runs a sequence of write operations on `BitWriter`, loads the resulting
+ * buffer into a `BitReader`, and then runs a series of read operations checking
+ * the return values are as expected.
+ *
+ * @example
+ *
+ * doWritesAndReads([
+ *   [{ method: 'writeBoolean', args: [true] }],
+ *   [{ method: 'readBoolean', args: [], returnValue: true }]
+ * ])
+ */
+function doWritesAndReads([writes, reads]: ActionsPair): void {
+  const performedActions: BoundAction<any>[] = []
   const writer = new BitWriter()
 
   for (const write of writes) {
@@ -164,6 +177,10 @@ function doWritesAndReads([writes, reads]: ActionsPairs): void {
   }
 }
 
+const testCaseNames = Object.getOwnPropertyNames(
+  testCaseFactories
+) as (keyof typeof testCaseFactories)[]
+
 for (const testCase of testCaseNames) {
   test(testCase, () => {
     for (let i = 0; i < 1000; i += 1) {
@@ -172,13 +189,17 @@ for (const testCase of testCaseNames) {
   })
 }
 
+/**
+ * Bring together a bunch of test cases to be run together on the same
+ * `BitWriter` and `BitReader`, to test interactions between them.
+ */
 test('all together', () => {
   for (let i = 0; i < 100; i += 1) {
     const factories = new Array(20)
       .fill(undefined)
       .map(() => testCaseFactories[random.pick(testCaseNames)])
 
-    const [writes, reads]: ActionsPairs = [[], []]
+    const [writes, reads]: ActionsPair = [[], []]
 
     for (const factory of factories) {
       const [w, r] = factory()
@@ -192,14 +213,22 @@ test('all together', () => {
 })
 
 const codeColor = '\x1b[38;5;202m'
+const dimColor = '\x1b[38;5;240m'
 const resetColor = '\x1b[0m'
 
+/**
+ * Formats `action` in pseudocode calling syntax.
+ *
+ * @example
+ *
+ * formatAction({ method: 'push', args: [1], receiver: array })               // Array#push(1)
+ * formatAction({ method: 'pop', args: [], receiver: array, returnValue: 1 }) // Array#pop() → 1
+ */
 function formatAction<C extends Instance>(
-  action: Action<C>,
-  instance: C,
+  action: BoundAction<C>,
   includeReturnValue = false
 ): string {
-  return `${codeColor}${instance.constructor.name}#${
+  return `${codeColor}${action.receiver.constructor.name}#${
     action.method
   }(${resetColor}${action.args
     .map(arg => inspect(arg, { colors: true }))
@@ -210,31 +239,52 @@ function formatAction<C extends Instance>(
   }`
 }
 
-function formatActions<C extends Instance>(
-  actions: PerformedAction<C>[]
-): string {
+/**
+ * Formats `actions` in a list, one per line.
+ *
+ * @example
+ *
+ * // Formats lists.
+ * // - Array#push(1)
+ * // - Array#pop() → 1
+ * formatActions([
+ *   { method: 'push', args: [1], receiver: array },
+ *   { method: 'pop', args: [], receiver: array, returnValue: 1 },
+ * ])
+ *
+ * // Has a basic "null" state.
+ * // - n/a
+ * formatActions([])
+ */
+function formatActions<C extends Instance>(actions: BoundAction<C>[]): string {
   if (actions.length === 0) {
-    return '- \x1b[38;5;240mn/a\x1b[0m'
+    return `- ${dimColor}n/a${resetColor}`
   }
 
-  return actions
-    .map(action => `- ${formatAction(action, action.receiver, true)}`)
-    .join('\n')
+  return actions.map(action => `- ${formatAction(action, true)}`).join('\n')
 }
 
+/**
+ * Performs `action` with `instance` and logs it in `performedActions`. This
+ * amounts to calling a method on `instance` and optionally checking its return
+ * value. If either the method call fails or the return value is not the
+ * expected value, an error will be thrown with the log of performed actions
+ * that led to this failure.
+ */
 function performAction<C extends Instance>(
   action: Action<C>,
-  instance: C,
-  performedActions: PerformedAction<C>[]
+  receiver: C,
+  log: BoundAction<C>[]
 ): void {
+  const boundAction = { ...action, receiver }
   let actualValue: typeof action['returnValue']
 
   try {
-    actualValue = instance[action.method](...action.args)
+    actualValue = receiver[action.method](...action.args)
   } catch (error) {
     error.message = `After performing these actions:\n${formatActions(
-      performedActions
-    )}\n\nAction ${formatAction(action, instance)}${
+      log
+    )}\n\nAction ${formatAction(boundAction)}${
       typeof action.returnValue === 'undefined'
         ? ''
         : ` (expected return ${inspect(action.returnValue, { colors: true })})`
@@ -247,14 +297,13 @@ function performAction<C extends Instance>(
       expect(actualValue).toEqual(action.returnValue)
     } catch (error) {
       error.message = `After performing these actions:\n${formatActions(
-        performedActions
+        log
       )}\n\nAction ${formatAction(
-        action,
-        instance
-      )} did not match expected value.\n\n${error.message}`
+        boundAction
+      )} did not return expected value.\n\n${error.message}`
       throw error
     }
   }
 
-  performedActions.push({ ...action, receiver: instance })
+  log.push(boundAction)
 }
