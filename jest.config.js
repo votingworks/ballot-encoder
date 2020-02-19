@@ -16,4 +16,9 @@ module.exports = {
     'jest-watch-typeahead/filename',
     'jest-watch-typeahead/testname',
   ],
+  globals: {
+    'ts-jest': {
+      packageJson: 'package.json',
+    },
+  },
 }

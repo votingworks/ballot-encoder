@@ -95,7 +95,6 @@ export enum BallotType {
 }
 
 // Updating this value is a breaking change.
-// eslint-disable-next-line no-bitwise
 export const BallotTypeMaximumValue = (1 << 4) - 1
 
 export interface CompletedBallot {

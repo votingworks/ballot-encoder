@@ -1,7 +1,3 @@
-const jsExtensions = ['.js', '.jsx']
-const tsExtensions = ['.ts', '.tsx']
-const allExtensions = jsExtensions.concat(tsExtensions)
-
 module.exports = {
   env: {
     browser: true,
@@ -10,10 +6,6 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
-    'airbnb-base',
-    'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:import/typescript',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from @typescript-eslint/eslint-plugin
     'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
@@ -31,26 +23,8 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'jest', 'no-null'],
-  settings: {
-    'import/extensions': allExtensions,
-    'import/parsers': {
-      '@typescript-eslint/parser': tsExtensions,
-    },
-    'import/resolver': {
-      node: {
-        extensions: allExtensions,
-      },
-    },
-  },
   rules: {
     camelcase: 'error',
-    'import/no-extraneous-dependencies': [
-      'error',
-      {
-        devDependencies: true,
-      },
-    ],
-    'import/prefer-default-export': 'off',
     'no-dupe-class-members': 'off',
     'no-restricted-globals': 'off',
     'no-restricted-syntax': 'off',

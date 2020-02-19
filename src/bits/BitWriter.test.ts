@@ -143,7 +143,6 @@ test('has a debug method to help understanding the contents', () => {
     .writeUint8(1, 2, 3)
     .debug()
 
-  /* eslint-disable no-console */
   expect(console.log).toHaveBeenNthCalledWith(1, 'wrote true')
   expect(console.log).toHaveBeenNthCalledWith(2, '1')
   expect(console.log).toHaveBeenNthCalledWith(3, 'wrote false')
@@ -152,5 +151,4 @@ test('has a debug method to help understanding the contents', () => {
     5,
     '10000000 01000000 10000000 11'
   )
-  /* eslint-enable no-console */
 })
