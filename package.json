@@ -39,10 +39,10 @@
     "@types/node": "^13.7.2",
     "@types/random-js": "^1.0.31",
     "@types/text-encoding": "^0.0.35",
-    "@typescript-eslint/eslint-plugin": "^2.20.0",
-    "@typescript-eslint/parser": "^2.20.0",
+    "@typescript-eslint/eslint-plugin": "^3.3.0",
+    "@typescript-eslint/parser": "^3.3.0",
     "@yarnpkg/pnpify": "^2.0.0-rc.18",
-    "eslint": "^6.8.0",
+    "eslint": "^7.2.0",
     "eslint-config-prettier": "^6.3.0",
     "eslint-plugin-jest": "^22.17.0",
     "eslint-plugin-no-null": "^1.0.2",
@@ -52,11 +52,11 @@
     "jest": "^25.1.0",
     "jest-watch-typeahead": "^0.4.2",
     "lint-staged": "^9.3.0",
-    "prettier": "^1.18.2",
+    "prettier": "^2.0.5",
     "random-js": "^2.1.0",
     "sort-package-json": "^1.22.1",
     "ts-jest": "^25.2.1",
-    "typescript": "^3.7.5"
+    "typescript": "^3.9.5"
   },
   "engines": {
     "node": ">= 12"

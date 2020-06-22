@@ -143,7 +143,7 @@ export const getContests = ({
   election: Election
 }): Contests =>
   election.contests.filter(
-    c =>
+    (c) =>
       ballotStyle.districts.includes(c.districtId) &&
       ballotStyle.partyId === c.partyId
   )
@@ -157,7 +157,7 @@ export const getPrecinctById = ({
 }: {
   election: Election
   precinctId: string
-}): Precinct | undefined => election.precincts.find(p => p.id === precinctId)
+}): Precinct | undefined => election.precincts.find((p) => p.id === precinctId)
 
 /**
  * Retrieves a ballot style by id.
@@ -169,7 +169,7 @@ export const getBallotStyle = ({
   ballotStyleId: string
   election: Election
 }): BallotStyle | undefined =>
-  election.ballotStyles.find(bs => bs.id === ballotStyleId)
+  election.ballotStyles.find((bs) => bs.id === ballotStyleId)
 
 /**
  * Validates the votes for a given ballot style in a given election.
@@ -188,7 +188,7 @@ export const validateVotes = ({
   const contests = getContests({ election, ballotStyle })
 
   for (const contestId of Object.getOwnPropertyNames(votes)) {
-    const contest = contests.find(c => c.id === contestId)
+    const contest = contests.find((c) => c.id === contestId)
 
     if (!contest) {
       throw new Error(
@@ -196,7 +196,7 @@ export const validateVotes = ({
           contestId
         )}, but no such contest exists in ballot style ${
           ballotStyle.id
-        } (expected one of ${contests.map(c => c.id).join(', ')})`
+        } (expected one of ${contests.map((c) => c.id).join(', ')})`
       )
     }
   }
@@ -217,7 +217,7 @@ export const getPartyPrimaryAdjectiveFromBallotStyle = ({
 }): string => {
   const parts = ballotStyleId && ballotStyleId.match(/(\d+)(\w+)/i)
   const abbrev = parts && parts[2]
-  const party = abbrev && election.parties.find(p => p.abbrev === abbrev)
+  const party = abbrev && election.parties.find((p) => p.abbrev === abbrev)
   const name = party && party.name
   return (name === 'Democrat' && 'Democratic') || name || ''
 }
@@ -256,7 +256,7 @@ export function vote(
   }
 ): VotesDict {
   return Object.getOwnPropertyNames(shorthand).reduce((result, contestId) => {
-    const contest = contests.find(c => c.id === contestId)
+    const contest = contests.find((c) => c.id === contestId)
 
     if (!contest) {
       throw new Error(`unknown contest ${contestId}`)
@@ -271,7 +271,7 @@ export function vote(
     if (Array.isArray(choice) && typeof choice[0] === 'string') {
       return {
         ...result,
-        [contestId]: contest.candidates.filter(c =>
+        [contestId]: contest.candidates.filter((c) =>
           (choice as string[]).includes(c.id)
         ),
       }
@@ -280,7 +280,7 @@ export function vote(
     if (typeof choice === 'string') {
       return {
         ...result,
-        [contestId]: [contest.candidates.find(c => c.id === choice)],
+        [contestId]: [contest.candidates.find((c) => c.id === choice)],
       }
     }
 
