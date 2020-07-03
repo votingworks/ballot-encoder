@@ -4,6 +4,13 @@
 __metadata:
   version: 4
 
+"@antongolub/iso8601@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@antongolub/iso8601@npm:1.2.1"
+  checksum: 2/4c30fa22cd43d136ec5067f82f65ce06de84d4606171ead015bc85e5a45c1820c7f480d82c2b9ed0d40a24d0aa07940777358d0e743dd7d5f89748db1ef0d59a
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.0.0, @babel/code-frame@npm:^7.5.5":
   version: 7.5.5
   resolution: "@babel/code-frame@npm:7.5.5"
@@ -955,6 +962,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@votingworks/ballot-encoder@workspace:."
   dependencies:
+    "@antongolub/iso8601": ^1.2.1
     "@types/jest": ^24.0.18
     "@types/node": ^13.7.2
     "@types/random-js": ^1.0.31
@@ -977,6 +985,7 @@ __metadata:
     sort-package-json: ^1.22.1
     ts-jest: ^25.2.1
     typescript: ^3.9.5
+    zod: ^1.7.1
   languageName: unknown
   linkType: soft
 
@@ -6951,5 +6960,12 @@ typescript@^3.9.5:
     y18n: ^4.0.0
     yargs-parser: ^16.1.0
   checksum: 2/5284b42f61757d6e724bfd00d6fdb3082beef9001603b23016f0db104f044e6623bd4d27c1b4252ee9cfbb055778977a7ea3c74b434baef54e939aefa2712681
+  languageName: node
+  linkType: hard
+
+"zod@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "zod@npm:1.7.1"
+  checksum: 2/7116710748829996907b4b19e37a86826d034f565ad6028610ae23bd23f375fee15e13dfe5e548cf088c3f4bd0497adedc60318375a99131e7b59e502c40f118
   languageName: node
   linkType: hard
