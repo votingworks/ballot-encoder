@@ -9,6 +9,7 @@
   "scripts": {
     "lint": "eslint 'src/**/*.{ts,js}'",
     "publish:npm": "yarn test:coverage && tsc && npm publish --access public && ts-emit-clean",
+    "generateCVRs": "ts-node src/cli/generateCVRs.ts",
     "test": "jest",
     "test:ci": "jest --ci --collectCoverage",
     "test:coverage": "jest --collectCoverage",
@@ -36,9 +37,12 @@
   },
   "dependencies": {
     "@antongolub/iso8601": "^1.2.1",
+    "commander": "^5.1.0",
+    "ts-node": "^8.10.2",
     "zod": "^1.7.1"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "@types/jest": "^24.0.18",
     "@types/node": "^13.7.2",
     "@types/random-js": "^1.0.31",
