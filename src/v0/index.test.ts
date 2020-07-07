@@ -107,8 +107,9 @@ test('encodes & decodes yesno votes', () => {
   const precinct = election.precincts[0]
   const yesnos = contests.filter((contest) => contest.type === 'yesno')!
   const votes = vote(contests, {
-    [yesnos[0].id]: 'yes',
-    [yesnos[1].id]: 'no',
+    [yesnos[0].id]: ['yes'],
+    [yesnos[1].id]: ['no'],
+    [yesnos[2].id]: [],
   })
   const ballotId = 'abcde'
   const ballot = {
@@ -123,7 +124,9 @@ test('encodes & decodes yesno votes', () => {
   const encodedBallot = '12.23.||||||||||||1|0||||||.abcde'
 
   expect(encodeBallotAsString(ballot)).toEqual(encodedBallot)
-  expect(decodeBallotFromString(election, encodedBallot)).toEqual(ballot)
+  expect(
+    encodeBallotAsString(decodeBallotFromString(election, encodedBallot))
+  ).toEqual(encodedBallot)
 })
 
 test('encodes & decodes candidate votes', () => {
@@ -218,7 +221,7 @@ test('cannot encode a yesno contest with an invalid value', () => {
   }
 
   expect(() => encodeBallot(ballot)).toThrowError(
-    'cannot encode yesno vote, expected "no" or "yes" but got "YEP"'
+    "cannot encode yesno vote, expected ['no'] or ['yes'] but got \"YEP\""
   )
 })
 

@@ -91,7 +91,7 @@ export type OptionalElection = Optional<Election>
 
 // Votes
 export type CandidateVote = Candidate[]
-export type YesNoVote = 'yes' | 'no'
+export type YesNoVote = ['yes'] | ['no'] | ['yes', 'no'] | ['no', 'yes'] | []
 export type OptionalYesNoVote = Optional<YesNoVote>
 export type Vote = CandidateVote | YesNoVote
 export type OptionalVote = Optional<Vote>
@@ -316,6 +316,10 @@ export function vote(
       [contestId]: Array.isArray(choice) ? choice : [choice],
     }
   }, {})
+}
+
+export function isVotePresent(vote?: Vote): boolean {
+  return !!vote && vote.length > 0
 }
 
 /**

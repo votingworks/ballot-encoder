@@ -10,6 +10,8 @@ import {
   getPrecinctById,
   validateVotes,
   VotesDict,
+  YesNoVote,
+  isVotePresent,
 } from '../election'
 
 export const MAXIMUM_WRITE_IN_LENGTH = 40
@@ -77,18 +79,31 @@ function encodeBallotVotesInto(
 ): BitWriter {
   // write roll call
   for (const contest of contests) {
-    const contestVote = votes[contest.id]
-    bits.writeUint1(contestVote ? 1 : 0)
+    bits.writeUint1(isVotePresent(votes[contest.id]) ? 1 : 0)
   }
 
   // write vote data
   for (const contest of contests) {
     const contestVote = votes[contest.id]
 
-    if (contestVote) {
+    if (isVotePresent(contestVote)) {
       if (contest.type === 'yesno') {
+        const ynVote = contestVote as YesNoVote
+
+        if (!Array.isArray(ynVote)) {
+          throw new Error(
+            `cannot encode a non-array yes/no vote: ${JSON.stringify(ynVote)}`
+          )
+        }
+
+        if (ynVote.length > 1) {
+          throw new Error(
+            `cannot encode a yes/no overvote: ${JSON.stringify(ynVote)}`
+          )
+        }
+
         // yesno votes get a single bit
-        bits.writeBoolean(contestVote === 'yes')
+        bits.writeBoolean(ynVote[0] === 'yes')
       } else {
         const choices = contestVote as CandidateVote
 
@@ -218,7 +233,7 @@ function decodeBallotVotes(contests: Contests, bits: BitReader): VotesDict {
   for (const contest of contestsWithAnswers) {
     if (contest.type === 'yesno') {
       // yesno votes get a single bit
-      votes[contest.id] = bits.readUint1() ? 'yes' : 'no'
+      votes[contest.id] = bits.readUint1() ? ['yes'] : ['no']
     } else {
       const contestVote: CandidateVote = []
 

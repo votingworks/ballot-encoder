@@ -17,6 +17,7 @@ import {
   VotesDict,
   YesNoContest,
   YesNoVote,
+  isVotePresent,
 } from '../election'
 
 export const MAXIMUM_WRITE_IN_LENGTH = 40
@@ -84,7 +85,7 @@ function encodeBallotVotes(contests: Contests, votes: VotesDict): string {
   return contests
     .map((contest) => {
       const contestVote = votes[contest.id]
-      if (!contestVote) {
+      if (!isVotePresent(contestVote)) {
         return EmptyVoteValue
       }
 
@@ -101,18 +102,19 @@ function encodeYesNoVote(
   _contest: YesNoContest,
   contestVote: YesNoVote
 ): string {
-  switch (contestVote) {
-    case 'no':
-      return '0'
-    case 'yes':
-      return '1'
-    default:
-      throw new Error(
-        `cannot encode yesno vote, expected "no" or "yes" but got ${JSON.stringify(
-          contestVote
-        )}`
-      )
+  if (
+    !Array.isArray(contestVote) ||
+    contestVote.length > 1 ||
+    (contestVote.length === 1 && !['yes', 'no'].includes(contestVote[0]))
+  ) {
+    throw new Error(
+      `cannot encode yesno vote, expected ['no'] or ['yes'] but got ${JSON.stringify(
+        contestVote
+      )}`
+    )
   }
+
+  return contestVote[0] === 'yes' ? '1' : '0'
 }
 
 function encodeCandidateVote(
@@ -218,9 +220,9 @@ function decodeYesNoVote(
 ): YesNoVote {
   switch (contestVote) {
     case '0':
-      return 'no'
+      return ['no']
     case '1':
-      return 'yes'
+      return ['yes']
     default:
       throw new Error(
         `cannot decode yesno vote in contest ${JSON.stringify(

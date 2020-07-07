@@ -5,6 +5,7 @@ import {
   electionSampleLongContent as election,
   getContests,
   vote,
+  isVotePresent,
 } from '../election'
 import * as v0 from '../v0'
 import {
@@ -183,14 +184,14 @@ it('encodes & decodes yesno votes correctly', () => {
   const ballotId = 'abcde'
   const contests = getContests({ ballotStyle, election })
   const votes = vote(contests, {
-    'judicial-robert-demergue': 'yes',
-    'judicial-elmer-hull': 'yes',
-    'question-a': 'yes',
-    'question-b': 'no',
-    'question-c': 'yes',
-    'proposition-1': 'yes',
-    'measure-101': 'no',
-    '102': 'yes',
+    'judicial-robert-demergue': ['yes'],
+    'judicial-elmer-hull': ['yes'],
+    'question-a': ['yes'],
+    'question-b': ['no'],
+    'question-c': ['yes'],
+    'proposition-1': [],
+    'measure-101': ['no'],
+    '102': ['yes'],
   })
   const ballot = {
     election,
@@ -212,13 +213,14 @@ it('encodes & decodes yesno votes correctly', () => {
     // ballot Id
     .writeString('abcde')
     // vote roll call
-    .writeBoolean(...contests.map((contest) => contest.id in votes))
+    .writeBoolean(
+      ...contests.map((contest) => isVotePresent(votes[contest.id]))
+    )
     // vote data
     .writeBoolean(true)
     .writeBoolean(true)
     .writeBoolean(true)
     .writeBoolean(false)
-    .writeBoolean(true)
     .writeBoolean(true)
     .writeBoolean(false)
     .writeBoolean(true)
@@ -229,7 +231,38 @@ it('encodes & decodes yesno votes correctly', () => {
     .toUint8Array()
 
   expect(encodeBallot(ballot)).toEqualBits(encodedBallot)
-  expect(decodeBallot(election, encodedBallot)).toEqual(ballot)
+  expect(encodeBallot(decodeBallot(election, encodedBallot))).toEqual(
+    encodedBallot
+  )
+})
+
+it('throws on trying to encode a bad yes/no vote', () => {
+  const ballotStyle = election.ballotStyles[0]
+  const precinct = election.precincts[0]
+  const ballotId = 'abcde'
+  const contests = getContests({ ballotStyle, election })
+  const votes = vote(contests, {
+    'judicial-robert-demergue': 'yes',
+  })
+  const ballot = {
+    election,
+    ballotId,
+    ballotStyle,
+    precinct,
+    votes,
+    isTestBallot: false,
+    ballotType: BallotType.Standard,
+  }
+
+  expect(() => encodeBallot(ballot)).toThrowError(
+    'cannot encode a non-array yes/no vote: "yes"'
+  )
+
+  // overvotes fail too.
+  ballot.votes['judicial-robert-demergue'] = ['yes', 'no']
+  expect(() => encodeBallot(ballot)).toThrowError(
+    'cannot encode a yes/no overvote: ["yes","no"]'
+  )
 })
 
 it('encodes & decodes candidate choice votes correctly', () => {
