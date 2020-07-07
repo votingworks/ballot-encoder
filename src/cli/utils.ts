@@ -82,6 +82,8 @@ GenerateCVRParams): CastVoteRecord | undefined => {
   // get all the contests
   const contests = getContests({ ballotStyle, election })
 
+  if (contests.length === 0) return
+
   const overvoteContestId = hasOvervote
     ? pickAtRandom(contests, 1)[0].id
     : undefined
