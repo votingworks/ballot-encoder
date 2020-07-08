@@ -10,14 +10,22 @@ import {
 
 import { randomBase64 } from '../utils/random'
 
+export interface CastVoteRecordLocale {
+  primary: string
+  secondary?: string
+}
+
 export interface CastVoteRecord
-  extends Dictionary<string | string[] | boolean | number> {
+  extends Dictionary<
+    string | string[] | boolean | number | CastVoteRecordLocale
+  > {
   _precinctId: string
   _ballotStyleId: string
   _ballotId: string
   _testBallot: boolean
   _scannerId: string
-  _pageNum?: number
+  _pageNumber?: number
+  _locale?: CastVoteRecordLocale
 }
 
 interface objectWithSortkey<T> {
@@ -169,7 +177,10 @@ GenerateCVRParams): CastVoteRecord | undefined => {
     _ballotId: randomBase64(),
     _testBallot: isTestBallot,
     _scannerId: scannerId,
-    _pageNum: pageNumber,
+    _pageNumber: pageNumber,
+    _locale: {
+      primary: 'en-US',
+    },
     ...votes,
   }
 }
