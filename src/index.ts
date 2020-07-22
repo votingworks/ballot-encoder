@@ -3,6 +3,7 @@ import * as v1 from './v1'
 import { CompletedBallot, Election } from './election'
 
 export * from './election'
+export * as schema from './schema'
 export { v0, v1 }
 
 export enum EncoderVersion {
