@@ -976,13 +976,13 @@ __metadata:
     eslint-plugin-no-null: ^1.0.2
     eslint-plugin-prettier: ^3.1.1
     husky: ^4.2.3
-    in-publish: ^2.0.0
     jest: ^25.1.0
     jest-watch-typeahead: ^0.4.2
     lint-staged: ^9.3.0
     prettier: ^2.0.5
     random-js: ^2.1.0
     sort-package-json: ^1.22.1
+    ts-emit-clean: ^1.0.0
     ts-jest: ^25.2.1
     typescript: ^3.9.5
     zod: ^1.7.1
@@ -3232,18 +3232,6 @@ fsevents@^2.1.2:
   version: 0.1.4
   resolution: "imurmurhash@npm:0.1.4"
   checksum: 2/34d414d789286f6ef4d2b954c76c7df40dd7cabffef9b9959c8bd148677e98151f4fa5344aae2e3ad2b62308555ccbba3022e535a3e24288c9babb1308e35532
-  languageName: node
-  linkType: hard
-
-"in-publish@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "in-publish@npm:2.0.0"
-  bin:
-    in-install: in-install.js
-    in-publish: in-publish.js
-    not-in-install: not-in-install.js
-    not-in-publish: not-in-publish.js
-  checksum: 2/6ebbff892720f2971aa2f1f2d3406a927874837ddb2a2f93941d02ee0cfb233183bdbb2aa8270509a29e59f068087646bb87a1c9d9b1ccd7df64ae28ff27425c
   languageName: node
   linkType: hard
 
@@ -6484,6 +6472,17 @@ resolve@1.1.7:
   dependencies:
     punycode: ^2.1.0
   checksum: 2/66e2e4d6799d3c2fcc56ad6084e8ab7b3e744f138babc86100e5e2bfaf011231d00d229cfccfaf338da953b96c3ea9128d182274915c1516c5189ee75b7c0ad9
+  languageName: node
+  linkType: hard
+
+"ts-emit-clean@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "ts-emit-clean@npm:1.0.0"
+  peerDependencies:
+    typescript: ^3.0.0
+  bin:
+    ts-emit-clean: ./bin/ts-emit-clean
+  checksum: 2/ef4b585437242eb5130797f6425c467da154f64aa0f7f7e01a6313e9446f6023b455b04fdb250adf6d4baa6315c5eadc8b35d10c1c5f27bf2ea80dffa17e01e4
   languageName: node
   linkType: hard
 
