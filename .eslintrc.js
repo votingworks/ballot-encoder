@@ -23,6 +23,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint', 'jest', 'no-null'],
+  reportUnusedDisableDirectives: true,
   rules: {
     camelcase: 'error',
     'no-dupe-class-members': 'off',
