@@ -25,7 +25,7 @@ export interface CastVoteRecord
   _testBallot: boolean
   _scannerId: string
   _pageNumber?: number
-  _locale?: CastVoteRecordLocale
+  _locales?: CastVoteRecordLocale
 }
 
 interface objectWithSortkey<T> {
@@ -178,7 +178,7 @@ GenerateCVRParams): CastVoteRecord | undefined => {
     _testBallot: isTestBallot,
     _scannerId: scannerId,
     _pageNumber: pageNumber,
-    _locale: {
+    _locales: {
       primary: 'en-US',
     },
     ...votes,
