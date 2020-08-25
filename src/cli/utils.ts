@@ -33,6 +33,8 @@ interface objectWithSortkey<T> {
   sortkey: number
 }
 
+const YESNO = ['yes', 'no']
+
 export function trueWithPercentageProbability(percentage: number): boolean {
   return Math.random() < percentage / 100
 }
@@ -71,7 +73,7 @@ export const generateCVR = ({
   election,
   precinctId,
   ballotStyleId,
-  isTestBallot = true,
+  isTestBallot = false,
   hasOvervote = false,
   hasUndervote = false,
   hasWriteins = false,
@@ -136,6 +138,59 @@ GenerateCVRParams): CastVoteRecord | undefined => {
     const contestIsUndervote =
       !contestIsOvervote && undervoteContestIds.includes(contest.id)
 
+    // special case the either-neither
+    if (contest.type === 'ms-either-neither') {
+      if (contestIsUndervote) {
+        switch (randomIntegerLessThan(3)) {
+          case 0:
+            votes[contest.eitherNeitherContestId] = pickAtRandom(YESNO, 1)
+            votes[contest.pickOneContestId] = []
+            break
+          case 1:
+            votes[contest.eitherNeitherContestId] = []
+            votes[contest.pickOneContestId] = pickAtRandom(YESNO, 1)
+            break
+          case 2:
+            votes[contest.eitherNeitherContestId] = []
+            votes[contest.pickOneContestId] = []
+            break
+        }
+        return
+      }
+
+      if (contestIsOvervote) {
+        switch (randomIntegerLessThan(3)) {
+          case 0:
+            votes[contest.eitherNeitherContestId] = YESNO
+            votes[contest.pickOneContestId] = pickAtRandom(
+              YESNO,
+              randomIntegerLessThan(2)
+            )
+            break
+          case 1:
+            votes[contest.eitherNeitherContestId] = pickAtRandom(
+              YESNO,
+              randomIntegerLessThan(2)
+            )
+            votes[contest.pickOneContestId] = YESNO
+            break
+          case 2:
+            votes[contest.eitherNeitherContestId] = YESNO
+            votes[contest.pickOneContestId] = YESNO
+            break
+        }
+        return
+      }
+
+      const eitherNeither = randomIntegerLessThan(2)
+      const pickOne = randomIntegerLessThan(2)
+
+      votes[contest.eitherNeitherContestId] = [YESNO[eitherNeither]]
+      votes[contest.pickOneContestId] = [YESNO[pickOne]]
+
+      return
+    }
+
     const contestHasWritein = writeinContestIds.includes(contest.id)
 
     let options: string[]
@@ -154,7 +209,7 @@ GenerateCVRParams): CastVoteRecord | undefined => {
 
         break
       case 'yesno':
-        options = ['yes', 'no']
+        options = YESNO
         seats = 1
         break
     }
