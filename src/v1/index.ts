@@ -72,6 +72,23 @@ export function encodeBallotInto(
     .writeUint(ballotType, { max: BallotTypeMaximumValue })
 }
 
+function writeYesNoVote(bits: BitWriter, ynVote: YesNoVote): void {
+  if (!Array.isArray(ynVote)) {
+    throw new Error(
+      `cannot encode a non-array yes/no vote: ${JSON.stringify(ynVote)}`
+    )
+  }
+
+  if (ynVote.length > 1) {
+    throw new Error(
+      `cannot encode a yes/no overvote: ${JSON.stringify(ynVote)}`
+    )
+  }
+
+  // yesno votes get a single bit
+  bits.writeBoolean(ynVote[0] === 'yes')
+}
+
 function encodeBallotVotesInto(
   contests: Contests,
   votes: VotesDict,
@@ -79,31 +96,42 @@ function encodeBallotVotesInto(
 ): BitWriter {
   // write roll call
   for (const contest of contests) {
-    bits.writeUint1(isVotePresent(votes[contest.id]) ? 1 : 0)
+    if (contest.type === 'ms-either-neither') {
+      bits.writeUint1(
+        isVotePresent(votes[contest.eitherNeitherContestId]) ? 1 : 0
+      )
+      bits.writeUint1(isVotePresent(votes[contest.pickOneContestId]) ? 1 : 0)
+    } else {
+      bits.writeUint1(isVotePresent(votes[contest.id]) ? 1 : 0)
+    }
   }
 
   // write vote data
   for (const contest of contests) {
+    if (contest.type === 'ms-either-neither') {
+      const eitherNeitherYnVote = votes[
+        contest.eitherNeitherContestId
+      ] as YesNoVote
+      const pickOneYnVote = votes[contest.pickOneContestId] as YesNoVote
+
+      if (eitherNeitherYnVote) {
+        writeYesNoVote(bits, eitherNeitherYnVote)
+      }
+
+      if (pickOneYnVote) {
+        writeYesNoVote(bits, pickOneYnVote)
+      }
+
+      continue
+    }
+
     const contestVote = votes[contest.id]
 
     if (isVotePresent(contestVote)) {
       if (contest.type === 'yesno') {
         const ynVote = contestVote as YesNoVote
 
-        if (!Array.isArray(ynVote)) {
-          throw new Error(
-            `cannot encode a non-array yes/no vote: ${JSON.stringify(ynVote)}`
-          )
-        }
-
-        if (ynVote.length > 1) {
-          throw new Error(
-            `cannot encode a yes/no overvote: ${JSON.stringify(ynVote)}`
-          )
-        }
-
-        // yesno votes get a single bit
-        bits.writeBoolean(ynVote[0] === 'yes')
+        writeYesNoVote(bits, ynVote)
       } else {
         const choices = contestVote as CandidateVote
 
@@ -227,11 +255,32 @@ function decodeBallotVotes(contests: Contests, bits: BitReader): VotesDict {
   const votes: VotesDict = {}
 
   // read roll call
-  const contestsWithAnswers = contests.filter(() => bits.readUint1())
+  const contestsWithAnswers = contests
+    .map((c) => {
+      if (c.type === 'ms-either-neither') {
+        const result = {
+          contest: c,
+          meta: [bits.readUint1(), bits.readUint1()],
+        }
+        return result
+      } else {
+        return { contest: c, meta: [bits.readUint1()] }
+      }
+    })
+    .filter(({ meta }) => meta.some((b) => b))
 
   // read vote data
-  for (const contest of contestsWithAnswers) {
-    if (contest.type === 'yesno') {
+  for (const { contest, meta } of contestsWithAnswers) {
+    if (contest.type === 'ms-either-neither') {
+      if (meta[0]) {
+        votes[contest.eitherNeitherContestId] = bits.readUint1()
+          ? ['yes']
+          : ['no']
+      }
+      if (meta[1]) {
+        votes[contest.pickOneContestId] = bits.readUint1() ? ['yes'] : ['no']
+      }
+    } else if (contest.type === 'yesno') {
       // yesno votes get a single bit
       votes[contest.id] = bits.readUint1() ? ['yes'] : ['no']
     } else {

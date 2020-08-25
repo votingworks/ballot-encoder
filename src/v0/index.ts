@@ -89,6 +89,11 @@ function encodeBallotVotes(contests: Contests, votes: VotesDict): string {
         return EmptyVoteValue
       }
 
+      /* istanbul ignore next */
+      if (contest.type === 'ms-either-neither') {
+        throw new Error('only yesno and candidate votes are supported')
+      }
+
       if (contest.type === 'yesno') {
         return encodeYesNoVote(contest, contestVote as YesNoVote)
       }
@@ -203,6 +208,11 @@ function decodeBallotVotes(
 
     const contest = contests[contestIndex]
     let contestVote: Vote
+
+    /* istanbul ignore next */
+    if (contest.type === 'ms-either-neither') {
+      throw new Error('only yesno and candidate votes are supported')
+    }
 
     if (contest.type === 'yesno') {
       contestVote = decodeYesNoVote(contest, encodedVote)

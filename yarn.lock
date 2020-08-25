@@ -708,6 +708,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/commander@npm:^2.12.2":
+  version: 2.12.2
+  resolution: "@types/commander@npm:2.12.2"
+  dependencies:
+    commander: "*"
+  checksum: 2/f87ace09de72d49973ef9c91f30dba5f4cdc23bc71de8c2b06b97b6fed6bd8b4fa3cffdfbbf3a0457f4c2ce998317523c4a6dc817a2a41229663a58e7a464c17
+  languageName: node
+  linkType: hard
+
 "@types/emscripten@npm:^1.38.0":
   version: 1.39.2
   resolution: "@types/emscripten@npm:1.39.2"
@@ -963,6 +972,7 @@ __metadata:
   resolution: "@votingworks/ballot-encoder@workspace:."
   dependencies:
     "@antongolub/iso8601": ^1.2.1
+    "@types/commander": ^2.12.2
     "@types/jest": ^24.0.18
     "@types/node": ^13.7.2
     "@types/random-js": ^1.0.31
@@ -970,6 +980,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^3.3.0
     "@typescript-eslint/parser": ^3.3.0
     "@yarnpkg/pnpify": ^2.0.0-rc.18
+    commander: ^5.1.0
     eslint: ^7.2.0
     eslint-config-prettier: ^6.3.0
     eslint-plugin-jest: ^22.17.0
@@ -984,6 +995,7 @@ __metadata:
     sort-package-json: ^1.22.1
     ts-emit-clean: ^1.0.0
     ts-jest: ^25.2.1
+    ts-node: ^8.10.2
     typescript: ^3.9.5
     zod: ^1.7.1
   languageName: unknown
@@ -1230,6 +1242,13 @@ __metadata:
     delegates: ^1.0.0
     readable-stream: ^2.0.6
   checksum: 2/2d6fdb0ddde9b8cb120b6851b42c75f6b6db78b540b579a00d144ad38cb9e1bdf1248e5454049fcf5b47ef61d1a6f2ea433a8e38984158afd441bc1e0db7a625
+  languageName: node
+  linkType: hard
+
+"arg@npm:^4.1.0":
+  version: 4.1.3
+  resolution: "arg@npm:4.1.3"
+  checksum: 2/81b3b40b1529c4fbf75b12f7c3e6fb2dcce9e78072063babc169de9b4f40777788f3d2b04380f659ef676a756e03ccfbfe78adf4477353bda906295fa69dab89
   languageName: node
   linkType: hard
 
@@ -1779,6 +1798,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:*, commander@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "commander@npm:5.1.0"
+  checksum: 2/d16141ea7f580945156fb8a06de2834c4647c7d9d3732ebd4534ab8e0b7c64747db301e18f2b840f28ea8fef51f7a8d6178e674b45a21931f0b65ff1c7f476b3
+  languageName: node
+  linkType: hard
+
 "commander@npm:^2.20.0":
   version: 2.20.0
   resolution: "commander@npm:2.20.0"
@@ -2099,6 +2125,13 @@ __metadata:
   version: 25.1.0
   resolution: "diff-sequences@npm:25.1.0"
   checksum: 2/f408f221d34ee61197dc9942d3477666396acd09df57db851ec5a18fb3c410c677a683106673bd93417b900788175be538bc50e3599feb895a18b1f5580d7688
+  languageName: node
+  linkType: hard
+
+"diff@npm:^4.0.1":
+  version: 4.0.2
+  resolution: "diff@npm:4.0.2"
+  checksum: 2/81b5cd7ddde6f0ba2a532d434cfdca365aedd6cc62bb133e851e66e071d40382a30924a07c1034bd3d5a2e332146f64514b73c06fe2ebc0490a67f0c98da79fb
   languageName: node
   linkType: hard
 
@@ -4539,6 +4572,13 @@ fsevents@^2.1.2:
   languageName: node
   linkType: hard
 
+"make-error@npm:^1.1.1":
+  version: 1.3.6
+  resolution: "make-error@npm:1.3.6"
+  checksum: 2/2c780bab8409b865e8ee86697c599a2bf2765ec64d21eb67ccda27050e039f983feacad05a0d43aba3c966ea03d305d2612e94fec45474bcbc61181f57c5bb88
+  languageName: node
+  linkType: hard
+
 "makeerror@npm:1.0.x":
   version: 1.0.11
   resolution: "makeerror@npm:1.0.11"
@@ -5972,6 +6012,16 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
+"source-map-support@npm:^0.5.17":
+  version: 0.5.19
+  resolution: "source-map-support@npm:0.5.19"
+  dependencies:
+    buffer-from: ^1.0.0
+    source-map: ^0.6.0
+  checksum: 2/59d4efaae97755155b078413ecba63517e3ef054cc7ab767bbd30e6f3054be2ae8e8f5cce7eef53b7eb93e98fe27a58dd8f5e7abfb13144ba420ddaf5267bbb2
+  languageName: node
+  linkType: hard
+
 "source-map-support@npm:^0.5.6":
   version: 0.5.13
   resolution: "source-map-support@npm:0.5.13"
@@ -6508,6 +6558,26 @@ resolve@1.1.7:
   languageName: node
   linkType: hard
 
+"ts-node@npm:^8.10.2":
+  version: 8.10.2
+  resolution: "ts-node@npm:8.10.2"
+  dependencies:
+    arg: ^4.1.0
+    diff: ^4.0.1
+    make-error: ^1.1.1
+    source-map-support: ^0.5.17
+    yn: 3.1.1
+  peerDependencies:
+    typescript: ">=2.7"
+  bin:
+    ts-node: dist/bin.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: 2/cd6e023e073d65ea346cf4a5b70bfd1e7c7f342c967a23a83038fd3462067558a4dda4fc8b238e6709db69aca3847590a93b4c52ae001e23ed9fef3b4fecbc71
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^1.8.1, tslib@npm:^1.9.0":
   version: 1.10.0
   resolution: "tslib@npm:1.10.0"
@@ -6959,6 +7029,13 @@ typescript@^3.9.5:
     y18n: ^4.0.0
     yargs-parser: ^16.1.0
   checksum: 2/5284b42f61757d6e724bfd00d6fdb3082beef9001603b23016f0db104f044e6623bd4d27c1b4252ee9cfbb055778977a7ea3c74b434baef54e939aefa2712681
+  languageName: node
+  linkType: hard
+
+"yn@npm:3.1.1":
+  version: 3.1.1
+  resolution: "yn@npm:3.1.1"
+  checksum: 2/bff63b80568d80c711670935427494dde47cdf97e8b04196b140ce0af519c81c5ee857eddad0caa8b422dd65aea0157bbfaacbb1546bebba623f0f383d5d9ae5
   languageName: node
   linkType: hard
 

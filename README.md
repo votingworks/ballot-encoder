@@ -148,3 +148,10 @@ How to publish a new version:
 6. Create a pull request for your newly pushed branch. Note that this pull
    request should only have the version bump commit, nothing else.
 7. Get the pull request approved and merged.
+
+# CLI for Generating CVRs
+
+```
+yarn run generateCVRs -n <number|100> -O <percentage_overvotes|0> -U <percentage_undervotes|0> -W <percentage_writeins|0> -M <percentage_multipage|0> election.json > CVRs.txt
+```
+
