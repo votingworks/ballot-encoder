@@ -830,6 +830,43 @@
       }
     },
     {
+      "id": "measure-420",
+      "districtId": "district-1",
+      "type": "ms-either-neither",
+      "section": "State of Hamilton",
+      "title": "Measure 420A/420B: Medical Marijuana Initiative",
+      "eitherNeitherContestId": "420A",
+      "pickOneContestId": "420B",
+      "description": "<strong>Measure 420A</strong>\n\n Description of Measure 420A here.\n\n<strong>Measure 420B</strong>\n\n Description of Measure 420B here.\n\n",
+      "eitherNeitherLabel": "Vote for either or against both",
+      "pickOneLabel": "Vote for your preferred option",
+      "eitherOption": {
+        "id": "420-either",
+        "label": "For either"
+      },
+      "neitherOption": {
+        "id": "420-neither",
+        "label": "Against both"
+      },
+      "firstOption": {
+        "id": "420A-option",
+        "label": "For Measure 420A"
+      },
+      "secondOption": {
+        "id": "420B-option",
+        "label": "For Measure 420B"
+      },
+      "_lang": {
+        "es-US": {
+          "section": "Estado de Hamilton",
+          "title": "Medida 420A/420B: Iniciativa de Marihuana Medicinal",
+          "description": "<strong>Medida 420A</strong>\n\n Descripción de la Medida 420A aquí.\n\n<strong>Medida 420B</strong>\n\n Descripción de la Medida 420B aquí.\n\n",
+          "eitherNeitherLabel": "Vota por uno o en contra de ambos",
+          "pickOneLabel": "Vote por su opción preferida"
+        }
+      }
+    },
+    {
       "id": "measure-101",
       "districtId": "district-2",
       "type": "yesno",
