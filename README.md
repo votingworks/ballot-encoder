@@ -11,6 +11,14 @@ yarn install
 yarn pnpify --sdk
 ```
 
+If packages are not resolving, ensure that VS Code is using the workspace
+version of TypeScript:
+
+1. Open any TypeScript file.
+2. Open command pallate with: Command-Shift-P
+3. Type `Select Typescript Version`
+4. Select `Use Workspace Version`
+
 ## Developing Alongside another Project
 
 In dev `ballot-encoder` dir, run `yarn tsc` to generate JavaScript files.

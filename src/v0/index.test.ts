@@ -93,7 +93,7 @@ test('encodes & decodes empty votes', () => {
     isTestMode: false,
     ballotType: BallotType.Standard,
   }
-  const encodedBallot = '12.23.|||||||||||||||||||.abcde'
+  const encodedBallot = '12.23.||||||||||||||||||||.abcde'
 
   expect(encodeBallotAsString(election, ballot)).toEqual(encodedBallot)
   expect(decodeBallotFromString(election, encodedBallot)).toEqual(ballot)
@@ -118,7 +118,7 @@ test('encodes & decodes yesno votes', () => {
     isTestMode: false,
     ballotType: BallotType.Standard,
   }
-  const encodedBallot = '12.23.||||||||||||1|0||||||.abcde'
+  const encodedBallot = '12.23.||||||||||||1|0|||||||.abcde'
 
   expect(encodeBallotAsString(election, ballot)).toEqual(encodedBallot)
   expect(
@@ -148,7 +148,7 @@ test('encodes & decodes candidate votes', () => {
     isTestMode: false,
     ballotType: BallotType.Standard,
   }
-  const encodedBallot = '12.23.0,1|||||||||||||||||||.abcde'
+  const encodedBallot = '12.23.0,1||||||||||||||||||||.abcde'
 
   expect(encodeBallotAsString(election, ballot)).toEqual(encodedBallot)
   expect(decodeBallotFromString(election, encodedBallot)).toEqual(ballot)
@@ -175,7 +175,7 @@ test('encodes write-ins as `W`', () => {
     isTestMode: false,
     ballotType: BallotType.Standard,
   }
-  const encodedBallot = '12.23.W|||||||||||||||||||.abcde'
+  const encodedBallot = '12.23.W||||||||||||||||||||.abcde'
 
   expect(encodeBallotAsString(election, ballot)).toEqual(encodedBallot)
 
@@ -224,25 +224,25 @@ test('cannot encode a yesno contest with an invalid value', () => {
 
 test('cannot decode a ballot with a ballot style id that does not exist', () => {
   expect(() => {
-    decodeBallotFromString(election, '9999.23.|||||||||||||||||||.abcde')
+    decodeBallotFromString(election, '9999.23.||||||||||||||||||||.abcde')
   }).toThrowError('unable to find ballot style by id: 9999')
 })
 
 test('cannot decode a ballot with a precinct id that does not exist', () => {
   expect(() => {
-    decodeBallotFromString(election, '12.9999.|||||||||||||||||||.abcde')
+    decodeBallotFromString(election, '12.9999.||||||||||||||||||||.abcde')
   }).toThrowError('unable to find precinct by id: 9999')
 })
 
 test('cannot decode a ballot with an unexpected number of votes', () => {
   expect(() => {
     decodeBallotFromString(election, '12.23.|||.abcde')
-  }).toThrowError('found 4 vote(s), but expected 20 (one per contest)')
+  }).toThrowError('found 4 vote(s), but expected 21 (one per contest)')
 })
 
 test('cannot decode a yesno vote that is not "0" or "1"', () => {
   expect(() => {
-    decodeBallotFromString(election, '12.23.|||||||||||||W||||||.abcde')
+    decodeBallotFromString(election, '12.23.|||||||||||||W|||||||.abcde')
   }).toThrowError(
     'cannot decode yesno vote in contest "judicial-elmer-hull", expected "0" or "1" but got "W"'
   )
@@ -250,7 +250,7 @@ test('cannot decode a yesno vote that is not "0" or "1"', () => {
 
 test('cannot decode a ballot with a negative candidate index', () => {
   expect(() => {
-    decodeBallotFromString(election, '12.23.|-1||||||||||||||||||.abcde')
+    decodeBallotFromString(election, '12.23.|-1|||||||||||||||||||.abcde')
   }).toThrowError(
     'expected candidate index in contest "senator" to be in range [0, 7) but got "-1"'
   )
@@ -258,7 +258,7 @@ test('cannot decode a ballot with a negative candidate index', () => {
 
 test('cannot decode a ballot with a candidate index out of bounds', () => {
   expect(() => {
-    decodeBallotFromString(election, '12.23.|7||||||||||||||||||.abcde')
+    decodeBallotFromString(election, '12.23.|7|||||||||||||||||||.abcde')
   }).toThrowError(
     'expected candidate index in contest "senator" to be in range [0, 7) but got "7"'
   )
@@ -266,7 +266,7 @@ test('cannot decode a ballot with a candidate index out of bounds', () => {
 
 test('cannot decode a ballot that is missing a ballot id', () => {
   expect(() => {
-    decodeBallotFromString(election, '12.23.|||||||||||||||||||')
+    decodeBallotFromString(election, '12.23.||||||||||||||||||||')
   }).toThrowError(
     'ballot data is malformed, expected data in this format: «ballot style id».«precinct id».«encoded votes».«ballot id»'
   )

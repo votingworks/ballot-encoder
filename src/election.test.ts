@@ -195,7 +195,7 @@ test('parsing gives specific errors for nested objects', () => {
         },
       ],
     })
-  ).toThrowError(/contests.21:.*title: Non-string type: number/s)
+  ).toThrowError(/contests.22:.*title: Non-string type: number/s)
 })
 
 test('ensures dates are ISO 8601-formatted', () => {
