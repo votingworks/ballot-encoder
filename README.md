@@ -2,15 +2,6 @@
 
 Provides encoding and decoding services for completed ballots.
 
-## Dev Install
-
-To use within VS Code:
-
-```
-yarn install
-yarn pnpify --sdk
-```
-
 ## Developing Alongside another Project
 
 In dev `ballot-encoder` dir, run `yarn tsc` to generate JavaScript files.

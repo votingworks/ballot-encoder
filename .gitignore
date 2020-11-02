@@ -5,8 +5,3 @@ node_modules
 *.js
 !*.config.js
 !*rc.js
-
-# yarn
-!.yarn/**/*
-.yarn/unplugged
-.yarn/build-state.yml
